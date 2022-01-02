@@ -20,7 +20,7 @@ import (
 type OSCommand struct {
 	*common.Common
 	Platform *Platform
-	Getenv   func(string) string
+	GetenvFn func(string) string
 
 	// callback to run before running a command, i.e. for the purposes of logging
 	onRunCommand func(CmdLogEntry)
@@ -79,7 +79,7 @@ func NewOSCommand(common *common.Common) *OSCommand {
 	c := &OSCommand{
 		Common:     common,
 		Platform:   platform,
-		Getenv:     os.Getenv,
+		GetenvFn:   os.Getenv,
 		removeFile: os.RemoveAll,
 	}
 
@@ -348,6 +348,10 @@ func (c *OSCommand) RemoveFile(path string) error {
 	c.LogCommand(fmt.Sprintf("Deleting path '%s'", path), false)
 
 	return c.removeFile(path)
+}
+
+func (c *OSCommand) Getenv(key string) string {
+	return c.GetenvFn(key)
 }
 
 func GetTempDir() string {
